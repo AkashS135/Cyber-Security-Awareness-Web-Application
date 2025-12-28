@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cybersecurity Doors</title>
+    <style>
+        body { font-family: Arial, sans-serif; text-align: center; }
+        .game-container { margin-top: 50px; }
+        .door { width: 100px; height: 150px; background: rgb(202, 9, 9); margin: 10px auto; cursor: pointer; color: white; display: flex; align-items: center; justify-content: center; font-size: 20px; }
+        .hidden { display: none; }
+    </style>
+</head>
+<body>
+    <h1>Cybersecurity Doors</h1>
+    <p>Time: <span id="timer">0</span> seconds</p>
+    <div class="game-container"></div>
+    <div id="final-score" class="hidden">
+        <h2>Game Over!</h2>
+        <p>Your Score: <span id="score">0</span>/6</p>
+        <p>Time Taken: <span id="final-time">0</span> seconds</p>
+    </div>
+    
+    <script>
+        const questions = [
+            { question: "Which of the following is a strong password?", options: ["Password123", "P@ssw0rd!Xyz"], answer: "B" },
+            { question: "What is phishing?", options: ["A cyber attack to steal information", "A type of fish"], answer: "A" },
+            { question: "What does HTTPS stand for?", options: ["HyperText Transfer Protocol Secure", "HyperText Transmission Protocol System"], answer: "A" },
+            { question: "Which of these is a two-factor authentication method?", options: ["Username and password", "Password and a one-time code"], answer: "B" },
+            { question: "What should you do if you receive a suspicious email?", options: ["Click on the link to check", "Ignore and report it"], answer: "B" },
+            { question: "Which is a common method hackers use to gain access?", options: ["Brute force attack", "Reading minds"], answer: "A" }
+        ];
+
+        let currentLevel = 1;
+        let score = 0;
+        let timeElapsed = 0;
+        let timer;
+
+        function startTimer() {
+            timer = setInterval(() => {
+                timeElapsed++;
+                document.getElementById('timer').innerText = timeElapsed;
+            }, 1000);
+        }
+
+        function stopTimer() {
+            clearInterval(timer);
+        }
+
+        function renderLevel(level) {
+            document.querySelector('.game-container').innerHTML = `
+                <div id='door${level}' class='door' onclick='openDoor(${level})'>Door ${level}</div>
+                <div id='challenge${level}' class='hidden'>
+                    <p>${questions[level - 1].question}</p>
+                    ${questions[level - 1].options.map((option, index) => 
+                        `<button onclick='checkAnswer(${level}, "${String.fromCharCode(65 + index)}")'>${String.fromCharCode(65 + index)}) ${option}</button>`
+                    ).join('')}
+                </div>
+            `;
+        }
+        
+        function openDoor(level) {
+            document.getElementById('door' + level).classList.add('hidden');
+            document.getElementById('challenge' + level).classList.remove('hidden');
+        }
+        
+        function checkAnswer(level, answer) {
+            if (questions[level - 1].answer === answer) {
+                score += 1;
+                currentLevel++;
+                if (currentLevel <= questions.length) {
+                    renderLevel(currentLevel);
+                } else {
+                    stopTimer();
+                    document.querySelector('.game-container').innerHTML = '';
+                    document.getElementById('final-score').classList.remove('hidden');
+                    document.getElementById('score').innerText = score;
+                    document.getElementById('final-time').innerText = timeElapsed;
+                }
+            } else {
+score = 0;
+                currentLevel--;
+                alert('Incorrect! Try again.');
+            }
+        }
+        
+        startTimer();
+        renderLevel(currentLevel);
+    </script>
+</body>
+</html>
